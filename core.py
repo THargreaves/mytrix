@@ -2,6 +2,7 @@
 
 from abc import ABC, abstractmethod
 
+import exceptions as exc
 
 ###############
 #  MATRICES  #
@@ -16,6 +17,34 @@ class Matrix(ABC):
         self.m = m
         self.n = n
         self.data = data
+
+    @property
+    def dim(self):
+        """Get matrix dimensions as tuple."""
+        return self.m, self.n
+
+    def __getitem__(self, key):
+        """Get element in (i, j)th position."""
+        self._check_key_validity(key)
+        return self.data[key[0]][key[1]]
+
+    def __setitem__(self, key, val):
+        """Set element in (i, j)th position."""
+        self._check_key_validity(key)
+        if not type(val) is self._type:
+            raise TypeError("value type doesn't match class type")
+        self.data[key[0]][key[1]] = val
+
+    def _check_key_validity(self, key):
+        """Validate keys for __getitem__() and __setitem__() methods."""
+        if not isinstance(key, tuple):
+            raise TypeError("key must be a tuple")
+        if len(key) != 2:
+            raise ValueError("key must be of length two")
+        if not (isinstance(key[0], int) and isinstance(key[1], int)):
+            raise TypeError("elements of key must be integers")
+        if not ((0 <= key[0] < self.m) and (0 <= key[1] < self.n)):
+            raise exc.OutOfBoundsError("key is out of bounds")
 
     @property
     @staticmethod
