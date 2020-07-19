@@ -2,7 +2,7 @@
 
 from abc import ABC, abstractmethod
 
-import exceptions as exc
+import mytrix.exceptions as exc
 
 ###############
 #  MATRICES  #
@@ -22,6 +22,41 @@ class Matrix(ABC):
     def dim(self):
         """Get matrix dimensions as tuple."""
         return self.m, self.n
+
+    def __eq__(self, obj):
+        """Evaluate whether two matrices are equal."""
+        if not isinstance(obj, Matrix):
+            return False
+        if not (self.m == obj.m and self.n == obj.n):
+            return False
+        if not type(self) == type(obj):
+            return False
+        for i in range(self.m):
+            for j in range(self.n):
+                if self[i, j] != obj[i, j]:
+                    return False
+        return True
+
+    def elem_equal(self, obj):
+        """Element-wise equality."""
+        if type(obj) == self.__class__:
+            if self.m != obj.m or self.n != obj.n:
+                raise exc.ComformabilityError(
+                        "matrices must have the same dimensions")
+            if type(self) is not type(obj):
+                raise TypeError("matrices must be the same type")
+            data = [[self[i, j] == obj[i, j]
+                    for j in range(self.n)]
+                    for i in range(self.m)]
+        elif type(obj) == self._type:
+            data = [[self[i, j] == obj
+                    for j in range(self.n)]
+                    for i in range(self.m)]
+        else:
+            raise TypeError(
+                    "cannot add object of type " + type(obj).__name__ +
+                    " to matrix")
+        return BooleanMatrix(self.m, self.n, data)
 
     def __getitem__(self, key):
         """Get element in (i, j)th position."""
