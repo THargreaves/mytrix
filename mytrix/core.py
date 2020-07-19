@@ -158,15 +158,15 @@ class Matrix(ABC):
     def ones(cls, m, n):
         """Make a matrix of ones of dimension m by n."""
         Matrix.validate_dimensions(m, n)
-        data = [[cls._one if i == j else cls._zero for j in range(n)]
-                for i in range(m)]
-        return cls(m, m, data)
+        data = [[cls._one for j in range(n)] for i in range(m)]
+        return cls(m, n, data)
 
     @classmethod
     def identity(cls, m):
         """Make an identity matrix of dimension m by m."""
         Matrix.validate_dimensions(m, m)
-        data = [[cls._one for j in range(m)] for i in range(m)]
+        data = [[cls._one if i == j else cls._zero for j in range(m)]
+                for i in range(m)]
         return cls(m, m, data)
 
 
